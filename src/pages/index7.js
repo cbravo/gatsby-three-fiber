@@ -3,7 +3,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { MetaballPass } from '../postprocessing/MetaballPass'
 import { Canvas, extend, useThree, useFrame } from 'react-three-fiber'
-import Metaball from '../components/Metaball2/Metaball'
+import Metaball from '../components/Metaball/Metaball'
 
 import './style.css'
 
@@ -38,9 +38,7 @@ const Main = () => {
         <Effects />
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
-        <Metaball position={[-1.2, 0, 0]} />
-        <Metaball position={[0, 0, 0]} />
-        <Metaball position={[0, 0.3, 3]} />
+        <Metaball count={100} />
       </Canvas>
     </div>
   )

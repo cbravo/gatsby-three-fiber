@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, useCallback } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { MetaballPass } from '../postprocessing/MetaballPass'
 import { Canvas, extend, useThree, useFrame } from 'react-three-fiber'
-import Metaball from '../components/Metaball2/Metaball'
+import MetaballSwarm from '../components/Metaball/MetaballSwarm'
 
 import './style.css'
 
@@ -36,11 +36,7 @@ const Main = () => {
     <div style={{ height: '100vh' }}>
       <Canvas gl={{ autoClear: false }}>
         <Effects />
-        <ambientLight />
-        <pointLight position={[10, 10, 10]} />
-        <Metaball position={[-1.2, 0, 0]} />
-        <Metaball position={[0, 0, 0]} />
-        <Metaball position={[0, 0.3, 3]} />
+        <MetaballSwarm instances={100} />
       </Canvas>
     </div>
   )
