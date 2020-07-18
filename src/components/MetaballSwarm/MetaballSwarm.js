@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useLayoutEffect } from 'react'
 import { useFrame, useThree } from 'react-three-fiber'
-import { Object3D, Vector4 } from 'three'
+import { Object3D, Vector2, Vector4 } from 'three'
 
 import CreateMetaballMaterial from './MetaballMaterial'
 
@@ -10,12 +10,13 @@ const MetaballSwarm = ({ mouse }) => {
   const height = gl.getContext().canvas.height
   const pixelRatio = gl.getPixelRatio()
   const mesh = useRef()
-  let metaballCount = 10
+  let metaballCount = 20
 
   const metaballUniforms = useMemo(
     () => new Array(metaballCount).fill().map(() => new Vector4()),
     [metaballCount]
   )
+  const resolution = useMemo(() => new Vector2(width, height), [height, width])
 
   // CREATE METABALL OBJECTS
   const metaballs = useMemo(
@@ -28,16 +29,13 @@ const MetaballSwarm = ({ mouse }) => {
     [metaballCount]
   )
 
-  const normalizeXPos = x => x + width * 0.5
-  const normalizeYPos = y => height - (y + height * 0.5)
-
   useLayoutEffect(() => {
     metaballs.forEach((metaball, i) => {
       metaball.userData = {
+        // radius: 35 * pixelRatio,
         radius: 35 * pixelRatio,
         enabled: 1.0,
-        // speed: 1.1 - 0.1 * (i + 1),
-        speed: 0.5,
+        speed: 0.65,
         tracking: true,
       }
     })
@@ -62,8 +60,8 @@ const MetaballSwarm = ({ mouse }) => {
         metaballTarget.y = metaball.position.y
       }
       metaballUniforms[i].set(
-        normalizeXPos(metaball.position.x),
-        normalizeYPos(metaball.position.y),
+        metaball.position.x,
+        metaball.position.y,
         radius,
         metaball.userData.enabled
       )
@@ -76,6 +74,7 @@ const MetaballSwarm = ({ mouse }) => {
       <shaderMaterial
         attach="material"
         uniforms-metaballs-value={metaballUniforms}
+        uniforms-resolution-value={resolution}
         args={[metaballMaterial]}
       />
       {/* <meshPhongMaterial attach="material" color="red" /> */}
