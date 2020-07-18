@@ -1,70 +1,59 @@
-import React, { useRef, useMemo, useLayoutEffect } from 'react'
+import React, { useRef, useMemo } from 'react'
 import { useFrame, useThree } from 'react-three-fiber'
-import { Object3D, Vector2, Vector4 } from 'three'
+import { Object3D, Vector2, Vector3 } from 'three'
 
 import CreateMetaballMaterial from './MetaballMaterial'
 
-const MetaballSwarm = ({ mouse }) => {
-  const { gl } = useThree()
-  const width = gl.getContext().canvas.width
-  const height = gl.getContext().canvas.height
+const MetaballSwarm = () => {
+  const { gl, size, mouse } = useThree()
   const pixelRatio = gl.getPixelRatio()
+  const width = size.width * pixelRatio
+  const height = size.height * pixelRatio
   const mesh = useRef()
   let metaballCount = 20
 
+  console.log(size)
+
   const metaballUniforms = useMemo(
-    () => new Array(metaballCount).fill().map(() => new Vector4()),
+    () => new Array(metaballCount).fill().map(() => new Vector3()),
     [metaballCount]
   )
   const resolution = useMemo(() => new Vector2(width, height), [height, width])
 
   // CREATE METABALL OBJECTS
-  const metaballs = useMemo(
-    () => new Array(metaballCount).fill().map(() => new Object3D()),
-    [metaballCount]
-  )
+  const metaballs = useMemo(() => {
+    const temp = []
+    for (let i = 0; i < metaballCount; i++) {
+      temp[i] = new Object3D()
+      temp[i].userData = {
+        radius: 35 * pixelRatio,
+        speed: 0.6,
+      }
+    }
+    return temp
+  }, [metaballCount, pixelRatio])
 
   const metaballMaterial = useMemo(
     () => CreateMetaballMaterial(metaballCount),
     [metaballCount]
   )
 
-  useLayoutEffect(() => {
-    metaballs.forEach((metaball, i) => {
-      metaball.userData = {
-        // radius: 35 * pixelRatio,
-        radius: 35 * pixelRatio,
-        enabled: 1.0,
-        speed: 0.65,
-        tracking: true,
-      }
-    })
-  }, [metaballs, pixelRatio])
-
   useFrame(() => {
     const metaballTarget = {
-      x: mouse.current[0] * pixelRatio,
-      y: mouse.current[1] * pixelRatio,
+      x: mouse.x * size.width * 0.5,
+      y: -mouse.y * size.height * 0.5,
     }
     metaballs.forEach((metaball, i) => {
-      const { speed, radius, tracking, enabled } = metaball.userData
-      if (tracking && enabled === 1) {
-        const distX = metaballTarget.x - metaball.position.x
-        const distY = metaballTarget.y - metaball.position.y
-        // metaball.position.x += distX * (i + 1) * speed
-        // metaball.position.y += distY * (i + 1) * speed
-        metaball.position.x += distX * speed
-        metaball.position.y += distY * speed
+      const { speed, radius } = metaball.userData
+      const distX = metaballTarget.x - metaball.position.x
+      const distY = metaballTarget.y - metaball.position.y
 
-        metaballTarget.x = metaball.position.x
-        metaballTarget.y = metaball.position.y
-      }
-      metaballUniforms[i].set(
-        metaball.position.x,
-        metaball.position.y,
-        radius,
-        metaball.userData.enabled
-      )
+      metaball.position.x += distX * speed
+      metaball.position.y += distY * speed
+
+      metaballTarget.x = metaball.position.x
+      metaballTarget.y = metaball.position.y
+      metaballUniforms[i].set(metaball.position.x, metaball.position.y, radius)
     })
   })
 
