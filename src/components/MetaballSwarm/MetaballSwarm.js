@@ -10,9 +10,7 @@ const MetaballSwarm = () => {
   const width = size.width * pixelRatio
   const height = size.height * pixelRatio
   const mesh = useRef()
-  let metaballCount = 20
-
-  console.log(size)
+  let metaballCount = 15
 
   const metaballUniforms = useMemo(
     () => new Array(metaballCount).fill().map(() => new Vector3()),
@@ -66,7 +64,6 @@ const MetaballSwarm = () => {
         uniforms-resolution-value={resolution}
         args={[metaballMaterial]}
       />
-      {/* <meshPhongMaterial attach="material" color="red" /> */}
     </mesh>
   )
 }

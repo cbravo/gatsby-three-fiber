@@ -25,7 +25,6 @@ const CreateMetaballMaterial = NUM_METABALLS => ({
       float x = gl_FragCoord.x - .5 * resolution.x;
       float y = -gl_FragCoord.y + .5 * resolution.y;
       float v = 0.0;
-      float enabled = 1.0;
       #pragma unroll_loop_start
       for (int i = 0; i < ${NUM_METABALLS}; i++) {
           vec3 mb = metaballs[i];
